@@ -1,0 +1,12 @@
+{
+  "name": "agent-tool-router",
+  "version": "1.0.0",
+  "description": "Planner + tool registry with timeout. Tiny agent core.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "start": "node src/cli.js"
+  },
+  "author": "Song Xiangrong",
+  "license": "MIT"
+}
