@@ -16,6 +16,23 @@ describe('agent-tool-router', () => {
     assert.deepEqual(rows.map((x) => x.result), ['ab', 'CD']);
   });
 
+  it('retries once on timeout then succeeds', async () => {
+    const r = createRegistry();
+    let n = 0;
+    r.register(
+      'flaky',
+      () => {
+        n += 1;
+        if (n === 1) return new Promise(() => {});
+        return 'ok';
+      },
+      { timeoutMs: 20 }
+    );
+    const value = await r.callWithRetry('flaky', {}, { retries: 1 });
+    assert.equal(value, 'ok');
+    assert.equal(n, 2);
+  });
+
   it('times out', async () => {
     const r = createRegistry();
     r.register('slow', () => new Promise(() => {}), { timeoutMs: 20 });

@@ -26,7 +26,19 @@ function createRegistry() {
       clearTimeout(timer);
     }
   }
-  return { register, call, names: () => [...tools.keys()] };
+  async function callWithRetry(name, input, { retries = 1 } = {}) {
+    let last;
+    for (let i = 0; i <= retries; i++) {
+      try {
+        return await call(name, input);
+      } catch (err) {
+        last = err;
+        if (err.code !== 'TIMEOUT' || i === retries) throw err;
+      }
+    }
+    throw last;
+  }
+  return { register, call, callWithRetry, names: () => [...tools.keys()] };
 }
 
 async function runPlan(registry, steps) {
