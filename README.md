@@ -1,15 +1,22 @@
 # agent-tool-router
 
-A tiny **agent core**: named tools, timeouts, a linear plan.
+Register a function under a name, call it with a timeout, and retry only when that call timed out.
 
-Not LangChain. You register functions, then run `[{ tool, input }, ...]`.
+```js
+const { createRegistry } = require("./src/index");
+
+const registry = createRegistry();
+registry.register("search", search, { timeoutMs: 1500 });
+
+await registry.callWithRetry("search", query, { retries: 1 });
+```
+
+An unknown name throws `UNKNOWN_TOOL`. A call that exceeds `timeoutMs` throws `TIMEOUT`. Other errors are not retried. This package does not talk to a model.
 
 ```bash
 npm test
 node src/cli.js
 ```
-
-Use this as the inner loop of a larger assistant. Model I/O stays outside this package.
 
 ## License
 
